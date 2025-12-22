@@ -25,13 +25,13 @@ TEST_MODE = True
 # me = os.getenv('me')
 
 # variables for discord
-TOKEN = int(os.getenv('DISCORD_TOKEN'))
+TOKEN = os.getenv('DISCORD_TOKEN')
 discord_guild = int(os.getenv('test_dsc_guild') if TEST_MODE else os.getenv('main_dsc_guild'))
 discord_channel = int(os.getenv('test_dsc_channel') if TEST_MODE else os.getenv('main_dsc_channel'))
 discord_role = int(os.getenv('test_dsc_role') if TEST_MODE else os.getenv('main_dsc_role'))
 
 # TODO: variables for telegram
-TELEGRAM_TOKEN = int(os.getenv('TELEGRAM_TOKEN'))
+TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 telegram_channel = int(os.getenv('test_tel_channel') if TEST_MODE else os.getenv('main_tel_channel'))
 
 # TODO: variables for whatsapp
@@ -50,16 +50,16 @@ async def on_ready():
     print(f'{client.user} has logged in\n\nConnected to the following guilds:')
     for guild in client.guilds:
         print(f'    {guild.name} (id: {guild.id})')
-    
-    await send_to_telegram(Announcement("asd"))
 
 @client.event
 async def on_message(message: discord.Message):
+    print("triggered")
+
     if message.author.bot:
         return
 
     if message.channel.id == discord_channel and discord_role in [x.id for x in message.author.roles]:
-        announcement = message
+        announcement = Announcement.fromDiscord(message)
         await send_to_telegram(announcement)
         # TODO not implemented yet
         # await send_to_whatsapp(announcement)

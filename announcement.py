@@ -9,7 +9,8 @@ class Announcement:
         self.message = message
         self.images = images
 
-    def fromDiscord(self, message: discord.Message):
+    @staticmethod
+    def fromDiscord(message: discord.Message):
         msg = message.content
         img = message.attachments
         return Announcement(msg, img)
