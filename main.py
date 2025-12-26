@@ -10,6 +10,7 @@ import discord.ext.commands
 from dotenv import load_dotenv
 
 from announcement import *
+from telegram_integration import *
 
 '''
 IDEAS
@@ -30,20 +31,9 @@ discord_guild = int(os.getenv('test_dsc_guild') if TEST_MODE else os.getenv('mai
 discord_channel = int(os.getenv('test_dsc_channel') if TEST_MODE else os.getenv('main_dsc_channel'))
 discord_role = int(os.getenv('test_dsc_role') if TEST_MODE else os.getenv('main_dsc_role'))
 
-# TODO: variables for telegram
-TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
-telegram_channel = int(os.getenv('test_tel_channel') if TEST_MODE else os.getenv('main_tel_channel'))
-
-# TODO: variables for whatsapp
-
-
 # TODO: proper intents my guy
 intents = discord.Intents.default()
 client = commands.Bot(command_prefix='!', intents=intents, help_command=None)
-
-
-
-
 
 @client.event
 async def on_ready():
@@ -64,25 +54,6 @@ async def on_message(message: discord.Message):
         # TODO not implemented yet
         # await send_to_whatsapp(announcement)
         
-
-
-
-
-async def send_to_telegram(announcement: Announcement):
-    msg = announcement.translate_dsc_tel()
-    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-    data = {
-        "chat_id": telegram_channel, 
-        "text": msg
-    }
-    async with httpx.AsyncClient() as client:
-        await client.post(url, json=data)
-
-async def send_to_whatsapp(announcement: Announcement):
-    msg = announcement.translate_dsc_wha()
-
-
-
 
 
 if __name__ == "__main__":
