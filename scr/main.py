@@ -19,6 +19,28 @@ IDEAS
     - classes for WhatsappConnection and TelegramConnection
 - Popup letting you schedule/repeat the announcements
     - Look at existing announcements yet to be sent and editing them.
+
+EXECUTION:
+/Announce - command that gives you a popup 
+Fields:
+    - Generate Greeting - Y/N
+- Body - text
+    - Generate Dininglist - Y/N
+- Forward to Tel - Y/N
+- Forward to Wha - Y/N
+- Mode - Remind in DMs / Post with Webhook
+X Add Time - button
+- Select time - Now/Date selector
+X Add Rule - button
+- At - 24 hr time selector for the rule
+X Rule Type [Daily Weekly Monthly Yearly]
+    Daily - every [x] days
+    Weekly - every [x] weeks & Each [mon, tue...] 
+    Monthy - every [x] months & Each [1-31] | On the [first, second, last...] [Mon, tue...]
+    Yearly - every
+/Check Announcements - list of current announcements and edit them
+
+/Config - popup for condfiguring where the telegram bot should send shit towards
 '''
 
 load_dotenv()
@@ -33,7 +55,8 @@ discord_role = int(os.getenv('test_dsc_role') if TEST_MODE else os.getenv('main_
 
 # TODO: proper intents my guy
 intents = discord.Intents.default()
-client = commands.Bot(command_prefix='!', intents=intents, help_command=None)
+intents.message_content = True
+client = discord.Client(intents=intents)
 
 @client.event
 async def on_ready():
@@ -43,7 +66,6 @@ async def on_ready():
 
 @client.event
 async def on_message(message: discord.Message):
-    print("triggered")
 
     if message.author.bot:
         return
