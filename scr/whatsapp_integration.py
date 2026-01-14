@@ -5,12 +5,8 @@ Includes any helper stuff for getting messages posted to whatsapp
 '''
 import re
 from announcement import Announcement
-import os
-from dotenv import load_dotenv
-from main import TEST_MODE
-
-# TODO: variables for whatsapp
-load_dotenv()
+from playwright.sync_api import sync_playwright
+from config import whatsapp_channel, TEST_MODE
 
 def translate_dsc_wha(text: str) -> str:
 
@@ -40,3 +36,27 @@ def translate_dsc_wha(text: str) -> str:
 #TODO not implemented yet
 async def send_to_whatsapp(announcement: Announcement):
     msg = translate_dsc_wha(announcement.message)
+    with sync_playwright() as p:
+        browser = p.chromium.launch_persistent_context(
+            user_data_dir="wha_profile",
+            headless=False
+        )
+        page = browser.new_page()
+        page.goto("https://web.whatsapp.com")
+
+        page.wait_for_selector('text="{}"'.format(whatsapp_channel))
+        page.click('text="{}"'.format(whatsapp_channel))
+
+        page.fill('div[contenteditable="true"]', msg)
+        page.keyboard.press("Enter")
+
+if __name__ == '__main__':
+    with sync_playwright() as p:
+        browser = p.chromium.launch_persistent_context(
+            user_data_dir="wa_profile",
+            headless=False
+        )
+        page = browser.new_page()
+        page.goto("https://web.whatsapp.com")
+        input("Scan QR, then press Enter...")
+

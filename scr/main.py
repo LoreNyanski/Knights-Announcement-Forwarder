@@ -1,16 +1,8 @@
 import discord
-import os
-import re
-import random
-import httpx
-
-from discord.ext import commands
-import discord.ext
-import discord.ext.commands
-from dotenv import load_dotenv
-
-from announcement import *
-from telegram_integration import *
+from config import DISCORD_TOKEN, discord_channel, discord_guild, discord_role
+from announcement import Announcement
+from telegram_integration import send_to_telegram
+from whatsapp_integration import send_to_whatsapp
 
 '''
 IDEAS
@@ -21,37 +13,27 @@ IDEAS
     - Look at existing announcements yet to be sent and editing them.
 
 EXECUTION:
-/Announce - command that gives you a popup 
+/Announce - command that gives you a popup then lets you add rules and dates in a message context
 Fields:
-    - Generate Greeting - Y/N
-- Body - text
-    - Generate Dininglist - Y/N
-- Forward to Tel - Y/N
-- Forward to Wha - Y/N
-- Mode - Remind in DMs / Post with Webhook
-X Add Time - button
-- Select time - Now/Date selector
-X Add Rule - button
-- At - 24 hr time selector for the rule
-X Rule Type [Daily Weekly Monthly Yearly]
+- Body - text/image
+
+- Generate Greeting - Y/N
+- Generate Dininglist - Y/N
+- Mode - Remind in DMs / Instant send
+
+- Base time - Date selector - All the rules will be calculated from this instance
+- Add Time - button
+- Add Rule - button
+- Rule Type [Daily Weekly Monthly] 
     Daily - every [x] days
     Weekly - every [x] weeks & Each [mon, tue...] 
     Monthy - every [x] months & Each [1-31] | On the [first, second, last...] [Mon, tue...]
-    Yearly - every
+
 /Check Announcements - list of current announcements and edit them
 
 /Config - popup for condfiguring where the telegram bot should send shit towards
 '''
 
-load_dotenv()
-TEST_MODE = True
-# me = os.getenv('me')
-
-# variables for discord
-TOKEN = os.getenv('DISCORD_TOKEN')
-discord_guild = int(os.getenv('test_dsc_guild') if TEST_MODE else os.getenv('main_dsc_guild'))
-discord_channel = int(os.getenv('test_dsc_channel') if TEST_MODE else os.getenv('main_dsc_channel'))
-discord_role = int(os.getenv('test_dsc_role') if TEST_MODE else os.getenv('main_dsc_role'))
 
 # TODO: proper intents my guy
 intents = discord.Intents.default()
@@ -79,4 +61,4 @@ async def on_message(message: discord.Message):
 
 
 if __name__ == "__main__":
-    client.run(TOKEN)
+    client.run(DISCORD_TOKEN)

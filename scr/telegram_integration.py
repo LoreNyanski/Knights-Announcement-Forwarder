@@ -6,14 +6,7 @@ Includes any helper stuff for getting messages posted to telegram
 import re
 from announcement import Announcement
 import httpx
-import os
-from dotenv import load_dotenv
-from main import TEST_MODE
-
-# TODO: variables for telegram
-load_dotenv()
-TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
-telegram_channel = int(os.getenv('test_tel_channel') if TEST_MODE else os.getenv('main_tel_channel'))
+from config import telegram_channel, TELEGRAM_TOKEN
 
 def translate_dsc_tel(text: str) -> str:
     # Italics: *text* or _text_ → _text_
