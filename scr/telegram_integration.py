@@ -26,6 +26,7 @@ async def send_to_telegram(announcement: Announcement):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     data = {
         "chat_id": telegram_channel, 
-        "text": msg
+        "text": msg,
+        "parse_mode": "Markdown"
     }
     await httpx.AsyncClient().post(url, json=data)

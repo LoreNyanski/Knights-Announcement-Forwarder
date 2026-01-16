@@ -56,10 +56,6 @@ async def on_message(message: discord.Message):
         announcement = Announcement.fromDiscord(message)
         await send_to_telegram(announcement)
         await send_to_whatsapp(announcement)
-        # TODO not implemented yet
-        # await send_to_whatsapp(announcement)
-        
-
 
 if __name__ == "__main__":
     client.run(DISCORD_TOKEN)
