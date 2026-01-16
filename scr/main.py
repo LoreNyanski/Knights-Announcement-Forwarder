@@ -1,4 +1,5 @@
 import discord
+
 from config import DISCORD_TOKEN, discord_channel, discord_guild, discord_role
 from announcement import Announcement
 from telegram_integration import send_to_telegram
@@ -52,7 +53,7 @@ async def on_message(message: discord.Message):
     if message.author.bot:
         return
 
-    if message.channel.id == discord_channel and discord_role in [x.id for x in message.author.roles]:
+    if message.guild.id == discord_guild and message.channel.id == discord_channel and discord_role in [x.id for x in message.author.roles]:
         announcement = Announcement.fromDiscord(message)
         await send_to_telegram(announcement)
         await send_to_whatsapp(announcement)

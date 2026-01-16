@@ -4,9 +4,10 @@ This is probably not the proper place to put this file but whatever
 Includes any helper stuff for getting messages posted to telegram
 '''
 import re
-from announcement import Announcement
 import httpx
 from config import telegram_channel, TELEGRAM_TOKEN
+
+from announcement import Announcement
 
 def translate_dsc_tel(text: str) -> str:
     # Italics: *text* or _text_ → _text_

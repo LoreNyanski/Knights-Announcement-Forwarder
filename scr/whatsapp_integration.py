@@ -4,12 +4,14 @@ This is probably not the proper place to put this file but whatever
 Includes any helper stuff for getting messages posted to whatsapp
 '''
 import re
-from announcement import Announcement
-from playwright.async_api import async_playwright
-from playwright.sync_api import sync_playwright
-from config import whatsapp_channel
 import asyncio
 import random
+from playwright.async_api import async_playwright
+from playwright.sync_api import sync_playwright
+
+from announcement import Announcement
+from config import whatsapp_channel
+
 
 # Human-like typing delays
 async def human_sleep(min_sec=0.4, max_sec=0.9):
