@@ -1,9 +1,13 @@
 from dotenv import load_dotenv
+from pathlib import Path
 import os
 
-load_dotenv()
+# ~~~~~~~~~~~~~~~~~~~~~~ NOT ENV VARIABLES ~~~~~~~~~~~~~~~~~~~~~~ #
+IMAGE_DIR = Path(".temp")
+TEST_MODE = True
 
-TEST_MODE = bool(os.getenv("TEST_MODE"))
+# ~~~~~~~~~~~~~~~~~~~~~~~~ ENV VARIABLES ~~~~~~~~~~~~~~~~~~~~~~~~ #
+load_dotenv()
 
 # variables for discord
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')

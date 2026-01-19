@@ -1,8 +1,11 @@
+from pathlib import Path
+import uuid
 import discord
 import random
 import datetime
 from dataclasses import dataclass
 
+from config import IMAGE_DIR
 from alarm_lib import Alarm, SubscriberInterface, RecurrenceRule
 
 @dataclass
@@ -11,11 +14,26 @@ class Announcement():
     images: list[str]
 
     @staticmethod
-    def fromDiscord(msg: discord.Message) -> Announcement:
+    async def fromDiscord(msg: discord.Message) -> Announcement:
         message = msg.content or ""
-        images = [attachment.url for attachment in msg.attachments]
+        images = await Announcement.download_images(msg)
         return Announcement(message, images)
 
+    @staticmethod
+    async def download_images(message: discord.Message) -> list[str]:
+        paths = []
+        for attachment in message.attachments:
+            if not attachment.content_type or not attachment.content_type.startswith("image/"):
+                continue
+
+            suffix = Path(attachment.filename).suffix
+            filename = f"{uuid.uuid4()}{suffix}"
+            path = IMAGE_DIR / filename
+
+            await attachment.save(path)
+            paths.append(str(path))
+
+        return paths
 
 class ScheduledAnnouncement(SubscriberInterface):
 

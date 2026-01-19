@@ -54,7 +54,7 @@ async def on_message(message: discord.Message):
         return
 
     if message.guild.id == discord_guild and message.channel.id == discord_channel and discord_role in [x.id for x in message.author.roles]:
-        announcement = Announcement.fromDiscord(message)
+        announcement = await Announcement.fromDiscord(message)
         await send_to_telegram(announcement)
         await send_to_whatsapp(announcement)
 
