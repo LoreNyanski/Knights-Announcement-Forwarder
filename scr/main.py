@@ -33,6 +33,17 @@ Fields:
 /Check Announcements - list of current announcements and edit them
 
 /Config - popup for condfiguring where the telegram bot should send shit towards
+
+
+
+CURRENT FEATURES
+- if you send a discord message to the specified channel in .env it automatically sends that same message to
+    the specified telegram and whatsapp channels in .env
+- images also get sent
+
+TODO FEATURES:
+- /Schedule to get a popup where you can configure a scheduled announcement
+- scheduled announcements send you a dm
 '''
 
 
