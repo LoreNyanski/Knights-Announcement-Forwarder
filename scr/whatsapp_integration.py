@@ -24,7 +24,7 @@ async def human_sleep(min_sec=0.4, max_sec=0.9):
 
 async def type_lines(page, text: str):
     for i, line in enumerate(text.split("\n")):
-        await page.keyboard.type(line, random.randint(40, 60))
+        await page.keyboard.type(text=line, delay=random.randint(40, 60))
         if i < text.count("\n"):
             await page.keyboard.down("Shift")
             await page.keyboard.press("Enter")
@@ -105,7 +105,6 @@ async def send_to_whatsapp(announcement: Announcement):
         await human_sleep()
 
         message_box = page.locator('footer div[contenteditable="true"]')
-        message_box.click()
         for image in images:
             img_path = Path(image)
             await paste_image_via_clipboard(page, img_path)
