@@ -4,7 +4,7 @@ import os
 
 # ~~~~~~~~~~~~~~~~~~~~~~ NOT ENV VARIABLES ~~~~~~~~~~~~~~~~~~~~~~ #
 IMAGE_DIR = Path(".temp")
-TEST_MODE = True
+TEST_MODE = False
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~ ENV VARIABLES ~~~~~~~~~~~~~~~~~~~~~~~~ #
 load_dotenv()

@@ -5,48 +5,6 @@ from announcement import Announcement
 from telegram_integration import send_to_telegram
 from whatsapp_integration import send_to_whatsapp
 
-'''
-IDEAS
-- Popup after posting thingy asking if you want to send it to the other channels
-- Way to link whatsapp and telegram within the bot
-    - classes for WhatsappConnection and TelegramConnection
-- Popup letting you schedule/repeat the announcements
-    - Look at existing announcements yet to be sent and editing them.
-
-EXECUTION:
-/Announce - command that gives you a popup then lets you add rules and dates in a message context
-Fields:
-- Body - text/image
-
-- Generate Greeting - Y/N
-- Generate Dininglist - Y/N
-- Mode - Remind in DMs / Instant send
-
-- Base time - Date selector - All the rules will be calculated from this instance
-- Add Time - button
-- Add Rule - button
-- Rule Type [Daily Weekly Monthly] 
-    Daily - every [x] days
-    Weekly - every [x] weeks & Each [mon, tue...] 
-    Monthy - every [x] months & Each [1-31] | On the [first, second, last...] [Mon, tue...]
-
-/Check Announcements - list of current announcements and edit them
-
-/Config - popup for condfiguring where the telegram bot should send shit towards
-
-
-
-CURRENT FEATURES
-- if you send a discord message to the specified channel in .env it automatically sends that same message to
-    the specified telegram and whatsapp channels in .env
-- images also get sent
-
-TODO FEATURES:
-- /Schedule to get a popup where you can configure a scheduled announcement
-- scheduled announcements send you a dm
-'''
-
-
 # TODO: proper intents my guy
 intents = discord.Intents.default()
 intents.message_content = True
