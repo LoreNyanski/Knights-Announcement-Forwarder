@@ -115,3 +115,19 @@ async def send_to_whatsapp(announcement: Announcement):
         
         # Optional: wait a bit before closing
         await human_sleep(1, 2)
+
+async def whatsapp_testing():
+    async with async_playwright() as p:
+        browser = await p.chromium.launch_persistent_context(
+            user_data_dir="wha_profile",
+            headless=False,  # headless=False is safer for WhatsApp detection
+            slow_mo=random.uniform(45,55)  # optional: slow down actions to mimic human behavior
+        )
+        
+        page = browser.pages[0] if browser.pages else await browser.new_page()
+        await page.goto("https://web.whatsapp.com")
+
+        input("Press enter when done testing")
+
+if __name__ == '__main__':
+    asyncio.run(whatsapp_testing())
