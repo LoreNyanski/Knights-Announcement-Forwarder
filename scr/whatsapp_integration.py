@@ -113,20 +113,21 @@ async def send_to_whatsapp(announcement: Announcement):
         await human_sleep()
         await page.keyboard.press("Enter")
         
-        dblcheck_selector = "div.message-out:last-child span[data-icon='msg-dblcheck']"
         message_text_selector = "div.message-out:last-child span[data-testid='selectable-text'] span"
 
-        # Wait until the last message text matches what you typed
+        # Python Playwright requires JS code as a string, with `arg=` for parameters
         await page.wait_for_function(
-            """(textSelector, expectedText) => {
-                const el = document.querySelector(textSelector);
-                return el && el.innerText.trim() === expectedText;
-            }""",
-            message_text_selector,
-            message
+            """
+            ({selector, text}) => {
+                const el = document.querySelector(selector);
+                return el && el.innerText.trim() === text;
+            }
+            """,
+            arg={"selector": message_text_selector, "text": message},
+            timeout=10000  # increase if your Pi is slow
         )
 
-        # Then wait until WhatsApp delivers it
+        dblcheck_selector = "div.message-out:last-child span[data-icon='msg-dblcheck']"
         await page.wait_for_selector(dblcheck_selector, timeout=10000)
         human_sleep()
 
