@@ -2,12 +2,14 @@ from dotenv import load_dotenv
 from pathlib import Path
 import os
 
-# ~~~~~~~~~~~~~~~~~~~~~~ NOT ENV VARIABLES ~~~~~~~~~~~~~~~~~~~~~~ #
+# ~~~~~~~~~~~~~~~~~~~~~~~ OTHER VARIABLES ~~~~~~~~~~~~~~~~~~~~~~~ #
 IMAGE_DIR = Path(".temp")
-TEST_MODE = os.getenv("APP_MODE", "test") == 'test'
-HEADLESS = not TEST_MODE
-print("Running in " + ("Test mode" if TEST_MODE else "Real mode"))
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~ RUN VARIABLES ~~~~~~~~~~~~~~~~~~~~~~~~ #
+TEST_MODE = os.getenv("APP_MODE", "True") == "True" # String bool isn't real it can't hurt you
+print("Running in " + ("Test mode" if TEST_MODE else "Real mode"))
+HEADLESS = os.getenv("APP_MODE", "False") == "True" # just dont question it...
+if HEADLESS: print("Running in Headless mode")
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~ ENV VARIABLES ~~~~~~~~~~~~~~~~~~~~~~~~ #
 load_dotenv()
