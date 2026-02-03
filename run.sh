@@ -34,5 +34,5 @@ git clean -fd
 
 # ----- run the bot -----
 export APP_MODE="$MODE"
-nohup "$SCRIPT_VENV/bin/python" "$SCRIPT_MAIN" > "$LOG_FILE" 2>&1 &
+nohup "$SCRIPT_VENV/bin/python" -u "$SCRIPT_MAIN" > "$LOG_FILE" 2>&1 &
 echo $! > "$PID_FILE"
