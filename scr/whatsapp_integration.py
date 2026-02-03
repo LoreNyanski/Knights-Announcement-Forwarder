@@ -12,7 +12,7 @@ from playwright.async_api import async_playwright
 from playwright.sync_api import sync_playwright
 
 from announcement import Announcement
-from config import whatsapp_channel
+from config import whatsapp_channel, HEADLESS
 
 # Image translation
 def image_to_base64(path: Path) -> str:
@@ -88,7 +88,7 @@ async def send_to_whatsapp(announcement: Announcement):
     async with async_playwright() as p:
         browser = await p.chromium.launch_persistent_context(
             user_data_dir="wha_profile",
-            headless=False,  # headless=False is safer for WhatsApp detection
+            headless=HEADLESS,  # headless=False is safer for WhatsApp detection
             slow_mo=random.uniform(45,55)  # optional: slow down actions to mimic human behavior
         )
         page = browser.pages[0] if browser.pages else await browser.new_page()
