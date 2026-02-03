@@ -114,7 +114,7 @@ async def send_to_whatsapp(announcement: Announcement):
         await page.keyboard.press("Enter")
         
         # Optional: wait a bit before closing
-        await human_sleep(1, 2)
+        await page.wait_for_selector(f"div.copyable-text span[title='{message}']", timeout=15000)
 
 async def whatsapp_testing():
     async with async_playwright() as p:
