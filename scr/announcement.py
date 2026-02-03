@@ -1,12 +1,11 @@
+from __future__ import annotations
+
 from pathlib import Path
 import uuid
 import discord
-import random
-import datetime
 from dataclasses import dataclass
 
 from config import IMAGE_DIR
-from alarm_lib import Alarm, SubscriberInterface, RecurrenceRule
 
 @dataclass
 class Announcement():
@@ -50,21 +49,3 @@ class Announcement():
 
     def __exit__(self, exc_type, exc, tb):
         self.delete_images()
-
-class ScheduledAnnouncement(SubscriberInterface):
-
-    def __init__(self, announcement: Announcement, alarm: Alarm, modifiers):
-        self.announcement = announcement
-        self.alarm = alarm
-        self.alarm.subscribe(self)
-        self.modifiers = modifiers or []
-
-    def receive_update(self, context):
-        pass
-
-def jumbled_greeting(text: str, exclude: list[str]) -> str:
-    exclude = exclude or []
-    return "Dearest Knights!\n\n" + text
-
-def add_dininglist(text: str) -> str:
-    return text + ""
