@@ -90,7 +90,6 @@ async def send_to_whatsapp(announcement: Announcement):
             user_data_dir="wha_profile",
             headless=HEADLESS,  # headless=False is safer for WhatsApp detection
             slow_mo=random.uniform(45,55),  # optional: slow down actions to mimic human behavior
-            viewport={"width": 1920, "height": 1080}
         )
         page = browser.pages[0] if browser.pages else await browser.new_page()
         await page.goto("https://web.whatsapp.com")
