@@ -6,8 +6,9 @@
 # run the bot
 
 # ----- vars ----
-TEST_MODE=False
-HEADLESS=False
+TEST_MODE="False"
+HEADLESS="False"
+PULL_GITHUB="True"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPT_MAIN="scr/main.py"
 SCRIPT_VENV=".venv"
@@ -17,13 +18,16 @@ PID_FILE="app.pid"
 cd "$SCRIPT_DIR"
 
 # ----- process flags -----
-while getopts "th" opt; do
+while getopts "thn" opt; do
   case $opt in
     t)
-      TEST_MODE=True
+      TEST_MODE="True"
       ;;
     h)
-      HEADLESS=True
+      HEADLESS="True"
+      ;;
+    n)
+      PULL_GITHUB="False"
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -43,9 +47,11 @@ if [[ -f "$PID_FILE" ]]; then
 fi
 
 # ----- pull from github -----
-git fetch origin
-git reset --hard origin/main
-git clean -fd
+if [[ "$PULL_GITHUB" == "True" ]]; then
+    git fetch origin
+    git reset --hard origin/main
+    git clean -fd
+fi
 
 # ----- updating requirements -----
 "$SCRIPT_VENV/bin/pip" install -r requirements.txt

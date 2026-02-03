@@ -112,7 +112,7 @@ async def send_to_whatsapp(announcement: Announcement):
         await type_lines(page, message)
         await human_sleep()
         await page.keyboard.press("Enter")
-        human_sleep(10, 11) # fuck it, just wait a bunch
+        await human_sleep(10, 11) # fuck it, just wait a bunch
 
 async def whatsapp_testing():
     async with async_playwright() as p:
