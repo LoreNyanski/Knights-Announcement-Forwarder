@@ -108,7 +108,7 @@ async def send_to_whatsapp(announcement: Announcement):
         for image in images:
             img_path = Path(image)
             await paste_image_via_clipboard(page, img_path)
-            await human_sleep()
+            await human_sleep(6,7)
         await type_lines(page, message)
         await human_sleep()
         await page.keyboard.press("Enter")
