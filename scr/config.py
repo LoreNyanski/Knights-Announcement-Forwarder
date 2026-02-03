@@ -4,7 +4,9 @@ import os
 
 # ~~~~~~~~~~~~~~~~~~~~~~ NOT ENV VARIABLES ~~~~~~~~~~~~~~~~~~~~~~ #
 IMAGE_DIR = Path(".temp")
-TEST_MODE = False
+MODE = os.getenv("APP_MODE", "test")
+TEST_MODE = MODE == 'test'
+print("Running in " + ("Test mode" if TEST_MODE else "Real mode"))
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~ ENV VARIABLES ~~~~~~~~~~~~~~~~~~~~~~~~ #
 load_dotenv()

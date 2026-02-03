@@ -6,6 +6,7 @@
 # run the bot
 
 # ----- vars ----
+MODE="${1:-real}"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPT_MAIN="scr/main.py"
 SCRIPT_VENV=".venv"
@@ -25,12 +26,13 @@ fi
 
 # ----- pull from github -----
 git fetch origin
-git reset --hard origin/master
+git reset --hard origin/main
 git clean -fd
 
 # ----- updating requirements -----
 "$SCRIPT_VENV/bin/pip" install -r requirements.txt
 
 # ----- run the bot -----
+export APP_MODE="$MODE"
 nohup "$SCRIPT_VENV/bin/python" "$SCRIPT_MAIN" > "$LOG_FILE" 2>&1 &
 echo $! > "$PID_FILE"
