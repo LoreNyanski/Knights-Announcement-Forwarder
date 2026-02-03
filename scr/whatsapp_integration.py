@@ -113,11 +113,22 @@ async def send_to_whatsapp(announcement: Announcement):
         await human_sleep()
         await page.keyboard.press("Enter")
         
-        # Optional: wait a bit before closing
-        pending_selector = "div.message-out:last-child span[data-icon='msg-time']"
         dblcheck_selector = "div.message-out:last-child span[data-icon='msg-dblcheck']"
-        await page.wait_for_selector(pending_selector, timeout=10000)
+        message_text_selector = "div.message-out:last-child span[data-testid='selectable-text'] span"
+
+        # Wait until the last message text matches what you typed
+        await page.wait_for_function(
+            """(textSelector, expectedText) => {
+                const el = document.querySelector(textSelector);
+                return el && el.innerText.trim() === expectedText;
+            }""",
+            message_text_selector,
+            message
+        )
+
+        # Then wait until WhatsApp delivers it
         await page.wait_for_selector(dblcheck_selector, timeout=10000)
+        human_sleep()
 
 async def whatsapp_testing():
     async with async_playwright() as p:
