@@ -6,8 +6,8 @@
 # run the bot
 
 # ----- vars ----
-TEST_MODE=false
-HEADLESS=false
+TEST_MODE=False
+HEADLESS=False
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPT_MAIN="scr/main.py"
 SCRIPT_VENV=".venv"
@@ -20,10 +20,10 @@ cd "$SCRIPT_DIR"
 while getopts "th" opt; do
   case $opt in
     t)
-      TEST_MODE=true
+      TEST_MODE=True
       ;;
     h)
-      HEADLESS=true
+      HEADLESS=True
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
