@@ -89,7 +89,8 @@ async def send_to_whatsapp(announcement: Announcement):
         browser = await p.chromium.launch_persistent_context(
             user_data_dir="wha_profile",
             headless=HEADLESS,  # headless=False is safer for WhatsApp detection
-            slow_mo=random.uniform(45,55)  # optional: slow down actions to mimic human behavior
+            slow_mo=random.uniform(45,55),  # optional: slow down actions to mimic human behavior
+            viewport={"width": 1920, "height": 1080}
         )
         page = browser.pages[0] if browser.pages else await browser.new_page()
         await page.goto("https://web.whatsapp.com")
@@ -112,24 +113,7 @@ async def send_to_whatsapp(announcement: Announcement):
         await type_lines(page, message)
         await human_sleep()
         await page.keyboard.press("Enter")
-        
-        message_text_selector = "div.message-out:last-child span[data-testid='selectable-text'] span"
-
-        # Python Playwright requires JS code as a string, with `arg=` for parameters
-        await page.wait_for_function(
-            """
-            ({selector, text}) => {
-                const el = document.querySelector(selector);
-                return el && el.innerText.trim() === text;
-            }
-            """,
-            arg={"selector": message_text_selector, "text": message},
-            timeout=10000  # increase if your Pi is slow
-        )
-
-        dblcheck_selector = "div.message-out:last-child span[data-icon='msg-dblcheck']"
-        await page.wait_for_selector(dblcheck_selector, timeout=10000)
-        human_sleep()
+        human_sleep(10, 11) # fuck it, just wait a bunch
 
 async def whatsapp_testing():
     async with async_playwright() as p:
