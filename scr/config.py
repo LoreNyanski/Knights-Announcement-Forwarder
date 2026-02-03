@@ -6,7 +6,7 @@ import os
 IMAGE_DIR = Path(".temp")
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~ RUN VARIABLES ~~~~~~~~~~~~~~~~~~~~~~~~ #
-TEST_MODE = os.getenv("TEST_MODE", "True") == "True" # String bool isn't real it can't hurt you
+TEST_MODE = os.getenv("TEST_MODE", "False") == "True" # String bool isn't real it can't hurt you
 print("Running in " + ("Test mode" if TEST_MODE else "Real mode"))
 HEADLESS = os.getenv("HEADLESS", "False") == "True" # just dont question it...
 if HEADLESS: print("Running in Headless mode")
