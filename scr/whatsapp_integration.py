@@ -18,13 +18,9 @@ from config import whatsapp_channel, HEADLESS
 def image_to_base64(path: Path) -> str:
     return base64.b64encode(path.read_bytes()).decode()
 
-# Human-like typing delays
-async def human_sleep(min_sec=0.4, max_sec=0.9):
-    await asyncio.sleep(random.uniform(min_sec, max_sec))
-
 async def type_lines(page, text: str):
     for i, line in enumerate(text.split("\n")):
-        await page.keyboard.type(text=line, delay=random.randint(40, 60))
+        await page.keyboard.type(text=line, delay=random.randint(10, 20))
         if i < text.count("\n"):
             await page.keyboard.down("Shift")
             await page.keyboard.press("Enter")
@@ -95,24 +91,22 @@ async def send_to_whatsapp(announcement: Announcement):
         await page.goto("https://web.whatsapp.com")
         
         # Wait for page to load
-        await page.wait_for_selector('div[role="grid"]', timeout=60000)  # main chat list
-        await human_sleep()
+        await page.wait_for_selector('div[role="grid"]', timeout=30000)  # main chat list
         
         # Click the community announcements channel by name
         chat = page.locator(f'span[title="{whatsapp_channel}"]')
         await chat.wait_for(state="visible")
         await chat.click()
-        await human_sleep()
 
         message_box = page.locator('footer div[contenteditable="true"]')
         for image in images:
             img_path = Path(image)
             await paste_image_via_clipboard(page, img_path)
-            await human_sleep(6,7)
         await type_lines(page, message)
-        await human_sleep()
+        # input('Press enter')
         await page.keyboard.press("Enter")
-        await human_sleep(6, 7) # fuck it, just wait a bunch
+        await asyncio.sleep(7) # fuck it, just wait a bunch
+
 
 async def whatsapp_testing():
     async with async_playwright() as p:
