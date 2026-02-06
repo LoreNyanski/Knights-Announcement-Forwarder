@@ -77,7 +77,7 @@ def translate_dsc_wha(text: str) -> str:
 
     return text
 
-async def send_to_whatsapp(announcement: Announcement):
+async def wp_send(announcement: Announcement):
     message = translate_dsc_wha(announcement.message)
     images = announcement.images
 

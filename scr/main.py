@@ -2,8 +2,10 @@ import discord
 
 from config import DISCORD_TOKEN, discord_channel, discord_guild, discord_role
 from announcement import Announcement
-from telegram_integration import send_to_telegram
-from whatsapp_integration import send_to_whatsapp
+from telegram_bot import telb_send
+from whatsapp_bridge import whab_send
+# from telegram_httpx import th_send
+# from whatsapp_playwright import wp_send
 
 # TODO: proper intents my guy
 intents = discord.Intents.default()
@@ -24,8 +26,8 @@ async def on_message(message: discord.Message):
 
     if message.guild.id == discord_guild and message.channel.id == discord_channel and discord_role in [x.id for x in message.author.roles]:
         with await Announcement.fromDiscord(message) as announcement:
-            await send_to_telegram(announcement)
-            await send_to_whatsapp(announcement)
+            await telb_send(announcement)
+            await whab_send(announcement)
             
 if __name__ == "__main__":
     client.run(DISCORD_TOKEN)

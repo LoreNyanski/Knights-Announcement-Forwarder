@@ -23,7 +23,7 @@ def translate_dsc_tel(text: str) -> str:
     text = re.sub(r"~~(.*?)~~", r"~\1~", text)
     return text
 
-async def send_to_telegram(announcement: Announcement):
+async def th_send(announcement: Announcement):
     if announcement.images:
         await send_to_telegram_images(announcement)
     else:
