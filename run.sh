@@ -41,7 +41,7 @@ while true; do
       shift
       ;;
     -c|--calibrate)
-      CALIBRATE=False
+      CALIBRATE=True
       shift
       ;;
     -h|--help)
