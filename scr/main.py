@@ -4,8 +4,6 @@ from config import DISCORD_TOKEN, discord_channel, discord_guild, discord_role
 from announcement import Announcement
 from telegram_bot import tel_send
 from whatsapp_pywhatkit import wha_send
-# from telegram_httpx import th_send
-# from whatsapp_playwright import wp_send
 
 # TODO: proper intents my guy
 intents = discord.Intents.default()

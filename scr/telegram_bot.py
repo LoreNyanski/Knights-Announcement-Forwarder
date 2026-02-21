@@ -1,4 +1,3 @@
-import asyncio
 import re
 import telegram as tel
 from announcement import Announcement

@@ -1,7 +1,7 @@
 import re
 import time
 import pyperclip
-from config import whatsapp_groupid
+from config import whatsapp_groupid, WAIT_CHANNEL, WAIT_WHATSAPP, WAIT_CLOSE, WAIT_IMAGE
 from announcement import Announcement
 
 from pyautogui import click, press, hotkey, size
@@ -35,56 +35,49 @@ def translate_dsc_wha(text: str) -> str:
 
     return text
 
-def copy_typewrite(messege: str):
+def copy_text(messege: str):
     pyperclip.copy(messege)
     hotkey("ctrl", "v")
     time.sleep(1)
 
-def select_announcements_channel(receiver: str, wait_time: int = 10, coordinates: tuple[int, int] = (WIDTH / 8, HEIGHT * 3 / 16)) -> None:
+def select_announcements_channel(receiver: str, coordinates: tuple[int, int] = (WIDTH / 8, HEIGHT * 3 / 16)) -> None:
     """Clicks on the announcemenent channel of a community
     Sorry but you just gotta like test it out on your own device what metrics work"""
     _web(receiver=receiver, message="")
-    time.sleep(wait_time)
+    time.sleep(WAIT_WHATSAPP)
     click(coordinates)
-    time.sleep(5)
+    time.sleep(WAIT_CHANNEL)
 
 def send_message_to_announcements(
         message: str, 
-        channel_id: str, 
-        wait_time: int = 5, 
-        close_time: int = 5
+        channel_id: str
 ) -> None:
     """Parses and Sends the Message\n
     This is a function from pywhatkit edited by LoreNyanski for the purposes of sending messages to the announcement chat of a community"""
 
     if not check_number(number=channel_id):
         select_announcements_channel(receiver=channel_id)
-        time.sleep(min(wait_time,1))
-        copy_typewrite(messege=message)
-    press("enter")
-    close_tab(wait_time=close_time)
+        copy_text(messege=message)
+        press("enter")
+    close_tab(wait_time=WAIT_CLOSE)
 
 def send_images_to_announcements(
         img_paths: list[str], 
         caption: str, 
-        channel_id: str, 
-        wait_time: int = 5,
-        img_time: int = 5,
-        close_time: int = 5
+        channel_id: str
 ) -> None:
     """Sends the Image to a Contact or a Group based on the Receiver
     This is a function from pywhatkit modified by LoreNyanski for the purposes of sending images to the announcement chat of a community"""
 
     if not check_number(number=channel_id):
         select_announcements_channel(receiver=channel_id)
-        time.sleep(min(wait_time,1))
         for img_path in img_paths:
             copy_image(path=img_path)
             hotkey("ctrl", "v")
-            time.sleep(img_time)
-        copy_typewrite(messege=caption)
-    press("enter")
-    close_tab(wait_time=close_time)
+            time.sleep(WAIT_IMAGE)
+        copy_text(messege=caption)
+        press("enter")
+    close_tab(wait_time=WAIT_CLOSE)
 
 
 def wha_send(announcement: Announcement):
