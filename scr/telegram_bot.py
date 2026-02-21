@@ -20,7 +20,7 @@ def translate_dsc_tel(text: str) -> str:
     text = re.sub(r"~~(.*?)~~", r"~\1~", text)
     return text
 
-async def telb_send(announcement: Announcement):
+async def tel_send(announcement: Announcement):
     bot = tel.Bot(token=TELEGRAM_TOKEN)
     imgs = announcement.images
     msg = translate_dsc_tel(announcement.message)

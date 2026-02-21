@@ -26,4 +26,4 @@ TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 telegram_channel = int(os.getenv('test_tel_channel') if TEST_MODE else os.getenv('main_tel_channel'))
 
 # variables for whatsapp
-whatsapp_channel = os.getenv("test_wha_channel") if TEST_MODE else os.getenv("main_wha_channel")
+whatsapp_groupid = os.getenv("test_wha_groupid") if TEST_MODE else os.getenv("main_wha_groupid")

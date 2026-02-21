@@ -5,3 +5,4 @@ __pycache__/
 wha_profile/
 .temp/
 app.*
+PyWhatKit_DB.txt
