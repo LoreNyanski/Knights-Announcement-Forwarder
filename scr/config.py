@@ -4,6 +4,8 @@ import os
 
 # ~~~~~~~~~~~~~~~~~~~~~~~ OTHER VARIABLES ~~~~~~~~~~~~~~~~~~~~~~~ #
 IMAGE_DIR = Path(".temp")
+DATA_DIR = Path("data")
+COORD_FILE = "app.coordinates"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~ RUN VARIABLES ~~~~~~~~~~~~~~~~~~~~~~~~ #
 TEST_MODE = os.getenv("TEST_MODE", "True") == "True" # String bool isn't real it can't hurt you
@@ -26,7 +28,12 @@ telegram_channel = int(os.getenv('test_tel_channel') if TEST_MODE else os.getenv
 # variables for whatsapp
 whatsapp_groupid = os.getenv("test_wha_groupid") if TEST_MODE else os.getenv("main_wha_groupid")
 
+# waiting variables for working on rpi (slow as fuck)
 WAIT_WHATSAPP = int(os.getenv('wait_whatsapp'))
 WAIT_CHANNEL = int(os.getenv('wait_channel'))
 WAIT_IMAGE = int(os.getenv('wait_image'))
 WAIT_CLOSE = int(os.getenv('wait_close'))
+
+# get the correct coordinates for opening the announcements channel of a community
+with open(file=(DATA_DIR/COORD_FILE)) as f:
+    ANNOUNCEMENTS_COORDINATES = (int(f.readline()), int(f.readline()))

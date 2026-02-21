@@ -8,17 +8,20 @@
 # ----- vars ----
 TEST_MODE="False"
 PULL_GITHUB="False"
+CALIBRATE="False"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPT_MAIN="scr/main.py"
+SCRIPT_COORDINATES="scr/coordinate_finder.py"
 SCRIPT_VENV=".venv"
 LOG_FILE="app.log"
-PID_FILE="app.pid"
+PID_FILE="data/app.pid"
+COORD_FILE="data/app.coordinates"
 
 cd "$SCRIPT_DIR"
 
 # ----- process flags -----
 # Use getopt to parse both short and long options
-OPTIONS=$(getopt -o pth --long pull,test,help -- "$@")
+OPTIONS=$(getopt -o ptch --long pull,test,calibrate,help -- "$@")
 if [ $? -ne 0 ]; then
   exit 1
 fi
@@ -37,8 +40,12 @@ while true; do
       TEST_MODE=True
       shift
       ;;
+    -c|--calibrate)
+      CALIBRATE=False
+      shift
+      ;;
     -h|--help)
-      echo "Flags: [-p|--pull] [-t|--test] [-h|--help]"
+      echo "Flags: [-p|--pull] [-t|--test] [-c|--calibrate] [-h|--help]"
       exit 0
       ;;
     --)
@@ -72,5 +79,9 @@ fi
 
 # ----- run the bot -----
 export TEST_MODE="$TEST_MODE"
+    # ----- calibrating coordinates -----
+if [[ "$CALIBRATE" == "True" ]]; then
+    "$SCRIPT_VENV/bin/python" "$SCRIPT_COORDINATES"
+fi
 nohup "$SCRIPT_VENV/bin/python" -u "$SCRIPT_MAIN" > "$LOG_FILE" 2>&1 &
 echo $! > "$PID_FILE"
