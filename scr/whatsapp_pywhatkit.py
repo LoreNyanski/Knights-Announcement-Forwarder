@@ -2,11 +2,12 @@ import re
 import os
 from config import whatsapp_groupid
 from announcement import Announcement
-from pywhatkit import sendwhatmsg_to_group_instantly, sendwhats_image
 
-from pyautogui import locateOnScreen, click, moveTo, press, hotkey, typewrite
-from pywhatkit.core.core import _web, check_number
+from pyautogui import click, press, hotkey, typewrite, size
+from pywhatkit.core.core import _web, check_number, close_tab, copy_image
 import time
+
+WIDTH, HEIGHT = size()
 
 def translate_dsc_wha(text: str) -> str:
 
@@ -33,63 +34,78 @@ def translate_dsc_wha(text: str) -> str:
 
     return text
 
-def select_announcements_channel(receiver: str, tries: int = 10) -> None:
-    """Clicks on the announcemenent channel of a community"""
+def typeout(message: str):
+    for char in message:
+        if char == "\n":
+            hotkey("shift", "enter")
+        elif char.isupper():
+            hotkey("shift", char)
+        else:
+            typewrite(char) # TODO okay not even the us keyboard works all times, just replace entirely
+            # IMPORTANT: YOU NEED TO HAVE THE US KEYBOARD LAYOUT FOR THIS.
+            # I HOPE THE PERSON WHO MADE THIS BURNS IN THE DEEPEST PITS OF HELL
+
+def select_announcements_channel(receiver: str, wait_time: int = 10, coordinates: tuple[int, int] = (WIDTH / 8, HEIGHT * 3 / 16)) -> None:
+    """Clicks on the announcemenent channel of a community
+    Sorry but you just gotta like test it out on your own device what metrics work"""
     _web(receiver=receiver, message="")
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    location = None
-    for i in range(tries):
-        time.sleep(5)
-        location = locateOnScreen(f"{dir_path}/assets/speaker_icon.png")
-        try:
-            moveTo(location)
-            click()
-            return
-        except:
-            print(f"Try {i} failed :(")
+    time.sleep(wait_time)
+    click(coordinates)
+    time.sleep(5)
 
-def send_message_to_announcements(message: str, receiver: str, wait_time: int) -> None:
+def send_message_to_announcements(
+        message: str, 
+        channel_id: str, 
+        wait_time: int = 5, 
+        close_time: int = 5
+) -> None:
     """Parses and Sends the Message\n
-    This is the function send_message from pywhatkit edited by LoreNyanski for the purposes of sending messages to the announcement chat of a community"""
+    This is a function from pywhatkit edited by LoreNyanski for the purposes of sending messages to the announcement chat of a community"""
 
-    if not check_number(number=receiver):
-        select_announcements_channel(receiver=receiver)
+    if not check_number(number=channel_id):
+        select_announcements_channel(receiver=channel_id)
         time.sleep(min(wait_time,1))
-        for char in message:
-            if char == "\n":
-                hotkey("shift", "enter")
-            else:
-                typewrite(char)
+        typeout(message) 
     press("enter")
+    close_tab(wait_time=close_time)
 
-# def sendwhatmsg_to_group_instantly(
-#     group_id: str,
-#     message: str,
-#     wait_time: int = 15,
-#     tab_close: bool = False,
-#     close_time: int = 3,
-# ) -> None:
-#     """Send WhatsApp Message to a Group Instantly"""
+def send_images_to_announcements(
+        img_paths: list[str], 
+        caption: str, 
+        channel_id: str, 
+        wait_time: int = 5,
+        img_time: int = 5,
+        close_time: int = 5
+) -> None:
+    """Sends the Image to a Contact or a Group based on the Receiver
+    This is a function from pywhatkit modified by LoreNyanski for the purposes of sending images to the announcement chat of a community"""
 
-#     current_time = time.localtime()
+    if not check_number(number=channel_id):
+        select_announcements_channel(receiver=channel_id)
+        time.sleep(min(wait_time,1))
+        for img_path in img_paths:
+            copy_image(path=img_path)
+            hotkey("ctrl", "v")
+            time.sleep(img_time)
+        typeout(caption)
+    press("enter")
+    close_tab(wait_time=close_time)
 
-#     time.sleep(wait_time)
-#     core.send_message(message=message, receiver=group_id, wait_time=wait_time)
-#     if tab_close:
-#         core.close_tab(wait_time=close_time)
 
-# def wha_send(announcement: Announcement):
-#     msg = announcement.message
-#     imgs = announcement.images
-#     if announcement.images:
-#         sendwhats_image()
-#     else:
-#         sendwhatmsg_to_group_instantly(
-#             group_id=whatsapp_groupid,
-#             message=translate_dsc_wha(msg),
-#             wait_time=10,
-#             tab_close=True
-#         )
+def wha_send(announcement: Announcement):
+    msg = announcement.message
+    imgs = announcement.images
+    if imgs:
+        send_images_to_announcements(
+            img_paths=imgs,
+            caption=translate_dsc_wha(msg),
+            channel_id=whatsapp_groupid
+        )
+    else:
+        send_message_to_announcements(
+            message=translate_dsc_wha(msg),
+            channel_id=whatsapp_groupid
+        )
 
 if __name__ == '__main__':
-    select_announcements_channel(whatsapp_groupid)
+    send_message_to_announcements(message="*Tasty Legs* and *crispy* _thighs_", channel_id=whatsapp_groupid)

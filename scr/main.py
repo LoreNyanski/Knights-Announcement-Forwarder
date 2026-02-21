@@ -26,7 +26,7 @@ async def on_message(message: discord.Message):
 
     if message.guild.id == discord_guild and message.channel.id == discord_channel and discord_role in [x.id for x in message.author.roles]:
         with await Announcement.fromDiscord(message) as announcement:
-            # await tel_send(announcement)
+            await tel_send(announcement)
             wha_send(announcement)
             
 if __name__ == "__main__":
