@@ -1,11 +1,12 @@
 import re
-import os
+import time
+import pyperclip
 from config import whatsapp_groupid
 from announcement import Announcement
 
-from pyautogui import click, press, hotkey, typewrite, size
+from pyautogui import click, press, hotkey, size
 from pywhatkit.core.core import _web, check_number, close_tab, copy_image
-import time
+
 
 WIDTH, HEIGHT = size()
 
@@ -34,16 +35,10 @@ def translate_dsc_wha(text: str) -> str:
 
     return text
 
-def typeout(message: str):
-    for char in message:
-        if char == "\n":
-            hotkey("shift", "enter")
-        elif char.isupper():
-            hotkey("shift", char)
-        else:
-            typewrite(char) # TODO okay not even the us keyboard works all times, just replace entirely
-            # IMPORTANT: YOU NEED TO HAVE THE US KEYBOARD LAYOUT FOR THIS.
-            # I HOPE THE PERSON WHO MADE THIS BURNS IN THE DEEPEST PITS OF HELL
+def copy_typewrite(messege: str):
+    pyperclip.copy(messege)
+    hotkey("ctrl", "v")
+    time.sleep(1)
 
 def select_announcements_channel(receiver: str, wait_time: int = 10, coordinates: tuple[int, int] = (WIDTH / 8, HEIGHT * 3 / 16)) -> None:
     """Clicks on the announcemenent channel of a community
@@ -65,7 +60,7 @@ def send_message_to_announcements(
     if not check_number(number=channel_id):
         select_announcements_channel(receiver=channel_id)
         time.sleep(min(wait_time,1))
-        typeout(message) 
+        copy_typewrite(messege=message)
     press("enter")
     close_tab(wait_time=close_time)
 
@@ -87,7 +82,7 @@ def send_images_to_announcements(
             copy_image(path=img_path)
             hotkey("ctrl", "v")
             time.sleep(img_time)
-        typeout(caption)
+        copy_typewrite(messege=caption)
     press("enter")
     close_tab(wait_time=close_time)
 
