@@ -17,21 +17,40 @@ PID_FILE="app.pid"
 cd "$SCRIPT_DIR"
 
 # ----- process flags -----
-while getopts "thn" opt; do
-  case $opt in
-    t)
-      TEST_MODE="True"
+# Use getopt to parse both short and long options
+OPTIONS=$(getopt -o pth --long pull,test,help -- "$@")
+if [ $? -ne 0 ]; then
+  exit 1
+fi
+
+# Reorder the positional parameters as parsed by getopt
+eval set -- "$OPTIONS"
+
+# Parse the flags
+while true; do
+  case "$1" in
+    -p|--pull)
+      PULL_GITHUB=True
+      shift
       ;;
-    n)
-      PULL_GITHUB="True"
+    -t|--test)
+      TEST_MODE=True
+      shift
       ;;
-    \?)
-      echo "Invalid option: -$OPTARG" >&2
+    -h|--help)
+      echo "Flags: [-p|--pull] [-t|--test] [-h|--help]"
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *)
+      echo "Unexpected option: $1"
       exit 1
       ;;
   esac
 done
-shift $((OPTIND -1))
 
 # ----- find & kill process -----
 if [[ -f "$PID_FILE" ]]; then
