@@ -1,6 +1,7 @@
-const { Client, LocalAuth } = require('whatsapp-web.js');
+const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const express = require('express');
 const qrcode = require('qrcode-terminal');
+const fs = require('fs');
 
 const app = express();
 app.use(express.json());
@@ -31,17 +32,51 @@ client.on('ready', () => {
 
 client.initialize();
 
-// --- HTTP endpoint to send messages ---
-const CHAT_ID = '120363424609598589@g.us'; // replace with your group ID
 
 app.post('/send', async (req, res) => {
-    const { message, chat_id } = req.body;
+    const { chat_id, message } = req.body;
     try {
         await client.sendMessage(chat_id, message);
         res.json({ success: true });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Failed to send message' });
+    }
+});
+
+app.post('/send-attachments', async (req, res) => {
+    const { chat_id, message, attachment_paths } = req.body;
+
+    if (!attachment_paths || !Array.isArray(attachment_paths) || attachment_paths.length === 0) {
+        return res.status(400).json({ error: 'attachment_paths must be a non-empty array' });
+    }
+
+    try {
+        // Convert paths to MessageMedia objects
+        const mediaArray = attachment_paths.map((filePath, idx) => {
+            if (!fs.existsSync(filePath)) {
+                throw new Error(`File does not exist: ${filePath}`);
+            }
+
+            const data = fs.readFileSync(filePath);
+            const mimeType = "application/octet-stream"; // generic, can improve with mime lib
+            const isLast = idx === attachment_paths.length - 1;
+
+            return new MessageMedia(mimeType, data.toString('base64'), isLast ? undefined : '');
+        });
+
+        // Send all media
+        // Only last item will have a caption
+    for (let i = 0; i < mediaArray.length; i++) {
+        const media = mediaArray[i];
+        if (i === mediaArray.length - 1) media.caption = message || '';
+        await client.sendMessage(targetChatId, media);
+    }
+
+        res.json({ success: true, sent: attachment_paths.length });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to send attachments', details: err.toString() });
     }
 });
 
