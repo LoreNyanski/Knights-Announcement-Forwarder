@@ -8,20 +8,23 @@
 # ----- vars ----
 TEST_MODE="False"
 PULL_GITHUB="False"
-CALIBRATE="False"
-SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-SCRIPT_MAIN="scr/main.py"
-SCRIPT_COORDINATES="scr/coordinate_finder.py"
-SCRIPT_VENV=".venv"
-LOG_FILE="app.log"
-PID_FILE="data/app.pid"
-COORD_FILE="data/app.coordinates"
 
-cd "$SCRIPT_DIR"
+DIR_CWD="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+DIR_VENV=".venv"
+
+SCRIPT_MAIN="scr/main.py"
+SCRIPT_INDEXJS="node-js/index.js"
+
+FILE_APP_LOG="app.log"
+FILE_NODE_LOG="node.log"
+FILE_APP_PID="data/app.pid"
+FILE_NODE_PID="data/node.pid"
+
+cd "$DIR_CWD"
 
 # ----- process flags -----
 # Use getopt to parse both short and long options
-OPTIONS=$(getopt -o ptch --long pull,test,calibrate,help -- "$@")
+OPTIONS=$(getopt -o pth --long pull,test,help -- "$@")
 if [ $? -ne 0 ]; then
   exit 1
 fi
@@ -40,12 +43,8 @@ while true; do
       TEST_MODE=True
       shift
       ;;
-    -c|--calibrate)
-      CALIBRATE=True
-      shift
-      ;;
     -h|--help)
-      echo "Flags: [-p|--pull] [-t|--test] [-c|--calibrate] [-h|--help]"
+      echo "Flags: [-p|--pull] [-t|--test] [-h|--help]"
       exit 0
       ;;
     --)
@@ -59,11 +58,21 @@ while true; do
   esac
 done
 
-# ----- find & kill process -----
-if [[ -f "$PID_FILE" ]]; then
-    OLD_PID="$(cat "$PID_FILE")"
+# ----- find & kill processes -----
+# Kill Python bot
+if [[ -f "$FILE_APP_PID" ]]; then
+    OLD_PID="$(cat "$FILE_APP_PID")"
     if kill -0 "$OLD_PID" 2>/dev/null; then
-        kill "$OLD_PID" 
+        kill "$OLD_PID"
+        sleep 2
+    fi
+fi
+
+# Kill Node.js WhatsApp server
+if [[ -f "$FILE_NODE_PID" ]]; then
+    OLD_NODE_PID="$(cat "$FILE_NODE_PID")"
+    if kill -0 "$OLD_NODE_PID" 2>/dev/null; then
+        kill "$OLD_NODE_PID"
         sleep 2
     fi
 fi
@@ -74,14 +83,16 @@ if [[ "$PULL_GITHUB" == "True" ]]; then
     git reset --hard origin/main
     git clean -fd
     # ----- updating requirements -----
-    "$SCRIPT_VENV/bin/pip" install -r requirements.txt
+    "$DIR_VENV/bin/pip" install -r requirements.txt
 fi
 
-# ----- run the bot -----
+# ----- run the Node.js server -----
+nohup node "$SCRIPT_INDEXJS" > "$FILE_NODE_LOG" 2>&1 &
+echo $! > "$FILE_NODE_PID"
+echo "Node.js WhatsApp server started with PID $(cat "$FILE_NODE_PID")"
+
+# ----- run the discord bot -----
 export TEST_MODE="$TEST_MODE"
-    # ----- calibrating coordinates -----
-if [[ "$CALIBRATE" == "True" ]]; then
-    "$SCRIPT_VENV/bin/python" "$SCRIPT_COORDINATES"
-fi
-nohup "$SCRIPT_VENV/bin/python" -u "$SCRIPT_MAIN" > "$LOG_FILE" 2>&1 &
-echo $! > "$PID_FILE"
+nohup "$DIR_VENV/bin/python" -u "$SCRIPT_MAIN" > "$FILE_APP_LOG" 2>&1 &
+echo $! > "$FILE_APP_PID"
+echo "discord bot started with PID $(cat "$FILE_APP_PID")"

@@ -3,7 +3,7 @@ import discord
 from config import DISCORD_TOKEN, discord_channel, discord_guild, discord_role
 from announcement import Announcement
 from telegram_bot import tel_send
-from whatsapp_pywhatkit import wha_send
+from whatsapp_nodejs import wha_send
 
 # TODO: proper intents my guy
 intents = discord.Intents.default()
@@ -25,7 +25,7 @@ async def on_message(message: discord.Message):
     if message.guild.id == discord_guild and message.channel.id == discord_channel and discord_role in [x.id for x in message.author.roles]:
         with await Announcement.fromDiscord(message) as announcement:
             await tel_send(announcement)
-            # wha_send(announcement)
+            wha_send(announcement)
             
 if __name__ == "__main__":
     client.run(DISCORD_TOKEN)

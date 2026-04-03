@@ -4,3 +4,6 @@ __pycache__/
 .env
 .temp/
 app.*
+node_modules
+.wwebjs*
+node.*
