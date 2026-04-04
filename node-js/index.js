@@ -1,84 +1,76 @@
-const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const express = require('express');
-const qrcode = require('qrcode-terminal');
 const fs = require('fs');
+const { MessageMedia } = require('whatsapp-web.js');
+const client = require('./client.js');
 
 const app = express();
 app.use(express.json());
 
-// Use LocalAuth to persist session
-const client = new Client({
-    authStrategy: new LocalAuth(),
-    puppeteer: {
-        headless: true,
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage'
-        ]
-    }
-});
 
-// Generate QR code for first login
-client.on('qr', (qr) => {
-    console.log('Scan this QR code with your WhatsApp:');
-    qrcode.generate(qr, { small: true });
-});
-
-// Confirm ready
-client.on('ready', () => {
-    console.log('WhatsApp client is ready!');
-});
-
-client.initialize();
-
-
+// ---- SEND TEXT ----
 app.post('/send', async (req, res) => {
     const { chat_id, message } = req.body;
+
+    if (!client.isReady) {
+        return res.status(503).json({ error: 'WhatsApp client not ready yet' });
+    }
+
     try {
         await client.sendMessage(chat_id, message);
         res.json({ success: true });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'Failed to send message' });
+        res.status(500).json({ error: err.message });
     }
 });
 
+
+// ---- SEND ATTACHMENTS ----
 app.post('/send-attachments', async (req, res) => {
     const { chat_id, message, attachment_paths } = req.body;
+
+    if (!client.isReady) {
+        return res.status(503).json({ error: 'WhatsApp client not ready yet' });
+    }
 
     if (!attachment_paths || !Array.isArray(attachment_paths) || attachment_paths.length === 0) {
         return res.status(400).json({ error: 'attachment_paths must be a non-empty array' });
     }
 
     try {
-        // Convert paths to MessageMedia objects
-        const mediaArray = attachment_paths.map((filePath, idx) => {
+        for (let i = 0; i < attachment_paths.length; i++) {
+            const filePath = attachment_paths[i];
+
             if (!fs.existsSync(filePath)) {
                 throw new Error(`File does not exist: ${filePath}`);
             }
 
+            // ✅ create fresh media EVERY time (important)
             const data = fs.readFileSync(filePath);
-            const mimeType = "application/octet-stream"; // generic, can improve with mime lib
-            const isLast = idx === attachment_paths.length - 1;
+            const media = new MessageMedia(
+                "application/octet-stream",
+                data.toString('base64')
+            );
 
-            return new MessageMedia(mimeType, data.toString('base64'), isLast ? undefined : '');
-        });
+            // only last gets caption
+            if (i === attachment_paths.length - 1) {
+                media.caption = message || '';
+            }
 
-        // Send all media
-        // Only last item will have a caption
-    for (let i = 0; i < mediaArray.length; i++) {
-        const media = mediaArray[i];
-        if (i === mediaArray.length - 1) media.caption = message || '';
-        await client.sendMessage(targetChatId, media);
-    }
+            await client.sendMessage(chat_id, media);
+
+            // small delay = prevents frame issues
+            await new Promise(res => setTimeout(res, 200));
+        }
 
         res.json({ success: true, sent: attachment_paths.length });
+
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'Failed to send attachments', details: err.toString() });
+        res.status(500).json({ error: err.toString() });
     }
 });
+
 
 app.listen(3000, () => {
     console.log('Server running on port 3000');
