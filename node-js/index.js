@@ -55,7 +55,7 @@ app.post('/send-attachments', async (req, res) => {
             const media = new MessageMedia(
                 mimeType,
                 data.toString('base64'),
-                fileName // <-- important for docs
+                fileName
             );
 
             const options = {};

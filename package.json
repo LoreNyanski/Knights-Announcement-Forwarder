@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/LoreNyanski/Knights-Announcement-Forwarder#readme",
   "dependencies": {
+    "dotenv": "^17.4.0",
     "express": "^5.2.1",
     "mime-types": "^3.0.2",
     "qrcode-terminal": "^0.12.0",
