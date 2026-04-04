@@ -5,7 +5,26 @@ require('dotenv').config(); // load .env
 
 let puppeteerConfig = {
     headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+    args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-extensions',
+        '--disable-background-networking',
+        '--disable-background-timer-throttling',
+        '--disable-client-side-phishing-detection',
+        '--disable-default-apps',
+        '--disable-hang-monitor',
+        '--disable-sync',
+        '--disable-translate',
+        '--disable-gpu',
+        '--disable-software-rasterizer',
+        '--disable-logging',
+        '--disable-popup-blocking',
+        '--disable-ipc-flooding-protection',
+        '--single-process',
+        '--no-zygote'
+    ]
 };
 
 if (process.env.CHROMIUM_PATH) {
