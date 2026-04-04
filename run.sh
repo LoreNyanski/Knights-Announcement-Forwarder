@@ -91,6 +91,7 @@ if [[ "$PULL_GITHUB" == "True" ]]; then
     git clean -fd
     # ----- updating requirements -----
     "$DIR_VENV/bin/pip" install -r requirements.txt
+    npm install
 fi
 
 # ----- run the Node.js server -----
