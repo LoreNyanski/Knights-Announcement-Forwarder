@@ -1,6 +1,8 @@
 const express = require('express');
 const fs = require('fs');
+const mime = require('mime-types');
 const { MessageMedia } = require('whatsapp-web.js');
+
 const client = require('./client.js');
 
 const app = express();
@@ -45,21 +47,22 @@ app.post('/send-attachments', async (req, res) => {
                 throw new Error(`File does not exist: ${filePath}`);
             }
 
-            // ✅ create fresh media EVERY time (important)
             const data = fs.readFileSync(filePath);
+
+            const mimeType = mime.lookup(filePath) || 'application/octet-stream';
+
             const media = new MessageMedia(
-                "application/octet-stream",
+                mimeType,
                 data.toString('base64')
             );
 
-            // only last gets caption
-            if (i === attachment_paths.length - 1) {
-                media.caption = message || '';
+            const options = {};
+            if (i === attachment_paths.length - 1 && message) {
+                options.caption = message;
             }
 
-            await client.sendMessage(chat_id, media);
+            await client.sendMessage(chat_id, media, options);
 
-            // small delay = prevents frame issues
             await new Promise(res => setTimeout(res, 200));
         }
 
