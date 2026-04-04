@@ -1,5 +1,6 @@
 const express = require('express');
 const fs = require('fs');
+const path = require('path')
 const mime = require('mime-types');
 const { MessageMedia } = require('whatsapp-web.js');
 
@@ -48,17 +49,25 @@ app.post('/send-attachments', async (req, res) => {
             }
 
             const data = fs.readFileSync(filePath);
-
             const mimeType = mime.lookup(filePath) || 'application/octet-stream';
+            const fileName = path.basename(filePath);
 
             const media = new MessageMedia(
                 mimeType,
-                data.toString('base64')
+                data.toString('base64'),
+                fileName // <-- important for docs
             );
 
             const options = {};
+
+            // caption only on last
             if (i === attachment_paths.length - 1 && message) {
                 options.caption = message;
+            }
+
+            // force documents for non-image/non-video files
+            if (!mimeType.startsWith('image/') && !mimeType.startsWith('video/')) {
+                options.sendMediaAsDocument = true;
             }
 
             await client.sendMessage(chat_id, media, options);

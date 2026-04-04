@@ -1,5 +1,6 @@
 import re
 import telegram as tel
+import mimetypes
 from announcement import Announcement
 
 from config import TELEGRAM_TOKEN, telegram_channel
@@ -21,23 +22,21 @@ def translate_dsc_tel(text: str) -> str:
 
 async def tel_send(announcement: Announcement):
     bot = tel.Bot(token=TELEGRAM_TOKEN)
-    imgs = announcement.images
+    attachments = announcement.attachments
     msg = translate_dsc_tel(announcement.message)
+
     async with bot:
-        if imgs: # announcement has images
-            if len(msg) <= tel.constants.MessageLimit.CAPTION_LENGTH:
-                medias = [tel.InputMediaPhoto(
-                              media=open(img, 'rb'), 
-                              caption=(msg if img == imgs[-1] else None),
-                              parse_mode=markdown)
-                          for img 
-                          in imgs]
-                await bot.send_media_group(chat_id=telegram_channel, media=medias)
+        medias = []
+        for i, file in enumerate(attachments):
+            mime_type, _ = mimetypes.guess_type(file)
+            caption = msg if i == len(attachments) - 1 and len(msg) <= tel.constants.MessageLimit.CAPTION_LENGTH else None
+
+            if mime_type and mime_type.startswith("image/"):
+                medias.append(tel.InputMediaPhoto(media=open(file, 'rb'), caption=caption, parse_mode=markdown))
             else:
-                medias = [tel.InputMediaPhoto(media=open(img, 'rb'))        
-                          for img 
-                          in imgs]
-                await bot.send_media_group(chat_id=telegram_channel, media=medias)
-                await bot.send_message(chat_id=telegram_channel, text=msg, parse_mode=markdown)
-        else: # announcement has no images
+                medias.append(tel.InputMediaDocument(media=open(file, 'rb'), caption=caption, parse_mode=markdown))
+
+        if medias:
+            await bot.send_media_group(chat_id=telegram_channel, media=medias)
+        elif msg:
             await bot.send_message(chat_id=telegram_channel, text=msg, parse_mode=markdown)
