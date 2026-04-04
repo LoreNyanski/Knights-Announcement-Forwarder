@@ -27,9 +27,13 @@ async def tel_send(announcement: Announcement):
 
     async with bot:
         medias = []
+        exceed_caption_length = False
         for i, file in enumerate(attachments):
             mime_type, _ = mimetypes.guess_type(file)
-            caption = msg if i == len(attachments) - 1 and len(msg) <= tel.constants.MessageLimit.CAPTION_LENGTH else None
+            caption = None
+            if i == len(attachments) - 1:
+                if len(msg) <= tel.constants.MessageLimit.CAPTION_LENGTH: caption = msg
+                else: exceed_caption_length = True # If caption is too long send image seperately and THEN the message
 
             if mime_type and mime_type.startswith("image/"):
                 medias.append(tel.InputMediaPhoto(media=open(file, 'rb'), caption=caption, parse_mode=markdown))
@@ -38,5 +42,6 @@ async def tel_send(announcement: Announcement):
 
         if medias:
             await bot.send_media_group(chat_id=telegram_channel, media=medias)
+            if exceed_caption_length: await bot.send_message(chat_id=telegram_channel, text=msg, parse_mode=markdown)
         elif msg:
             await bot.send_message(chat_id=telegram_channel, text=msg, parse_mode=markdown)
